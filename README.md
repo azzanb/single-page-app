@@ -10,6 +10,6 @@ A database-based app that stores, creates, and deletes recipes using AngularJS
   
   
  
-### The template folder holds the html templates:
+### The template folder holds the html templates
 
   
