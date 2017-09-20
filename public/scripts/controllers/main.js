@@ -1,5 +1,18 @@
 'use strict';
 
+/* 
+
+!!!!!-----TODO-----!!!!!
+
+1)Filter list of recipes based on selected category (main page)
+2)Delete Recipe
+3)Save Recipe
+4)Create Recipe
+5)When adding another ingredient, each new select box under 'Item' should be an 
+	input
+
+*/
+
 angular.module('app')
 .controller('RecipesController', function($scope, dataService, $location){
 
@@ -50,8 +63,8 @@ angular.module('app')
 				$scope.ingredients = $scope.getRecipes[i].ingredients;
 				$scope.steps = $scope.getRecipes[i].steps;
 				
-				$scope.postRecipe = function(){
-					dataService.addRecipe($scope.id)
+				$scope.postRecipe = function(data){
+					console.log(dataService.addRecipe({data:$scope.id}))
 				}
 			}
 		}
