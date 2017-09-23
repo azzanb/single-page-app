@@ -19,7 +19,7 @@ angular.module('app')
 		$http.get('/api/recipes?category={category}')
 		.then(callback);
 	};
-	this.getRecipesId = function(callback, id){
+	this.getRecipesId = function(callback){
 		$http.get('/api/recipes/{id}')
 		.then(callback);	
 	};
@@ -29,9 +29,9 @@ angular.module('app')
 	};
 	this.addRecipe = function(data, callback){
 		$http.post('/api/recipes/', data)
-		.then(callback);	
+		then(callback);	
 	}
-	this.deleteRecipe = function(callback, id){
+	this.deleteRecipe = function(callback){
 		$http.delete('/api/recipes/{id}')
 		.then(callback);
 	};

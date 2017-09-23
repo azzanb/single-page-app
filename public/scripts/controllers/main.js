@@ -1,24 +1,12 @@
 'use strict';
 
-/* 
-
-!!!!!-----TODO-----!!!!!
-
-1)Filter list of recipes based on selected category (main page)
-2)Delete Recipe
-3)Save Recipe
-4)Create Recipe
-5)When adding another ingredient, each new select box under 'Item' should be an 
-	input
-
-*/
-
 angular.module('app')
 .controller('RecipesController', function($scope, dataService, $location){
 
 	dataService.getCategories(function(response){
 		$scope.getCategories = response.data;
 		$scope.category = $scope.getCategories[0].name;
+
 	});
 
 	//hide "No recipes found" if recipes are present
@@ -42,7 +30,7 @@ angular.module('app')
 	
 	
 })
-.controller('RecipeDetailController', function($scope, dataService, $location){
+.controller('RecipeDetailController', function($scope, $http, dataService, $location){
 
 	dataService.getCategories(function(response){
 		$scope.getCategories = response.data;
@@ -62,16 +50,11 @@ angular.module('app')
 				$scope.cookTime = $scope.getRecipes[i].cookTime;
 				$scope.ingredients = $scope.getRecipes[i].ingredients;
 				$scope.steps = $scope.getRecipes[i].steps;
-				
-				$scope.postRecipe = function(data){
-					console.log(dataService.addRecipe({data:$scope.id}))
-				}
 			}
 		}
 		if($location.url() === "/add"){
 			$scope.addNew = "Add New Recipe";
-			$scope.recipeName = '';
-			
+			$scope.recipeName = '';	
 		}
 	});
 
@@ -79,9 +62,13 @@ angular.module('app')
 		$location.path('/');
 	}
 
-	$scope.updateRecipe = function(data){
-		dataService.updateRecipe({data: $scope.id})
+	$scope.update = function(data){
+		$http.put("/api/recipes/{id}", data)
+		.success(function(data){
+			console.log(data);
+		})
 	}
+	
 
 	$scope.addIngredient = function(){
 		$scope.ingredients.push({
