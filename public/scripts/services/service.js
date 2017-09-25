@@ -23,16 +23,14 @@ angular.module('app')
 		$http.get('/api/recipes/{id}')
 		.then(callback);	
 	};
-	this.updateRecipe = function(data, callback){
-		$http.put("/api/recipes/{id}", data)
-		.then(callback);
+	this.updateRecipe = function(id, data){
+		$http.put(`/api/recipes/${id}`, data)
 	};
-	this.addRecipe = function(data, callback){
-		$http.post('/api/recipes/', data)
-		then(callback);	
+	this.addRecipe = function(data){
+		$http.post('/api/recipes', data)
 	}
-	this.deleteRecipe = function(callback){
-		$http.delete('/api/recipes/{id}')
+	this.deleteRecipe = function(id, callback){
+		$http.delete(`/api/recipes/${id}`)
 		.then(callback);
 	};
 });

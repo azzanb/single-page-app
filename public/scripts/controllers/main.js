@@ -2,114 +2,108 @@
 
 angular.module('app')
 .controller('RecipesController', function($scope, dataService, $location){
+	
+	dataService.getRecipes(function(response){
+		$scope.getRecipes = response.data;	
+	});
 
 	dataService.getCategories(function(response){
 		$scope.getCategories = response.data;
 		$scope.category = $scope.getCategories[0].name;
-
 	});
-
-	//hide "No recipes found" if recipes are present
-	$scope.hideDiv = false;
-
-	$scope.deleteRecipe = function(){
-		//console.log(this.recipe)
-	};
 
 	$scope.addRecipe = function(){
 		$location.path('/add')
 	}
-
-	dataService.getRecipes(function(response){
-		$scope.getRecipes = response.data;	
-	});
-
-	// dataService.getRecipesId(function(id){
-	// 	$scope.getRecipes = response.data;	
-	// });
 	
-	
+	//Anything wrong here?
+	$scope.deleteRecipe = function(){
+		dataService.deleteRecipe(this.recipe._id, res => {
+			$scope.getRecipes.splice(this, 1)
+		});
+	};
 })
-.controller('RecipeDetailController', function($scope, $http, dataService, $location){
+.controller('RecipeDetailController', function($scope, dataService, $location, $routeParams){
 
 	dataService.getCategories(function(response){
 		$scope.getCategories = response.data;
 	});
 
-	//Display recipe's data
+	dataService.getFoodItems(function(response){
+		$scope.getFoodItems = response.data;
+	});
+
+	//create data for new recipe to be saved
+	let addNewRecipe = {
+		"name": "",
+        "desciption": "",
+        "category": "",
+        "prepTime": "",
+        "cookTime": "",
+        "ingredients": [],
+        "steps": []
+	};
+
+	//Dynamic url routing
+	$scope.edit = $location.url() === `/edit/${$routeParams.id}`;
+
+	//Set placeholder for select element for foodItems when adding a new recipe
+	$scope.addNewFoodItem = $location.url() === "/add" ? "Choose Food Item" : "";
+
+	//Dynamically get recipe data based on recipe's id: /edit/${id}
 	dataService.getRecipes(function(response){
-		$scope.getRecipes = response.data;	
-		$scope.categories = response.data.category;	
-		for(let i = 0; i < $scope.getRecipes.length; i++){
-			if($location.url() === ('/edit/' + $scope.getRecipes[i]._id)){
-				$scope.recipeName = $scope.getRecipes[i].name;
-				$scope.description = $scope.getRecipes[i].description; 
-				$scope.selected = $scope.getRecipes[i].category;
-				$scope.prepTime = $scope.getRecipes[i].prepTime;
-				$scope.id = $scope.getRecipes[i]._id;
-				$scope.cookTime = $scope.getRecipes[i].cookTime;
-				$scope.ingredients = $scope.getRecipes[i].ingredients;
-				$scope.steps = $scope.getRecipes[i].steps;
-			}
-		}
+		const recipes = response.data;	
+		$scope.recipeData = recipes.filter(function(recipe){
+			return recipe._id === $routeParams.id; 
+		})[0] || addNewRecipe;
+		//console.log($scope.recipeData);
+
 		if($location.url() === "/add"){
-			$scope.addNew = "Add New Recipe";
-			$scope.recipeName = '';	
+			$scope.addNew = "Add New Recipe";	
 		}
 	});
+
+	$scope.addRecipe = function(data){
+		dataService.addRecipe(data);
+		$location.path('/');
+	}
+
+	//Anything wrong here?
+	$scope.updateRecipe = function(id, data){
+		dataService.updateRecipe(id, data);
+		$location.path('/');
+	}
 
 	$scope.cancel = function(){
 		$location.path('/');
 	}
 
-	$scope.update = function(data){
-		$http.put("/api/recipes/{id}", data)
-		.success(function(data){
-			console.log(data);
-		})
-	}
-	
-
-	$scope.addIngredient = function(){
-		$scope.ingredients.push({
+	$scope.addIngredient = function(recipe){
+		recipe.ingredients.push({
 			foodtItem: "",
 			condition: "",
 			amount: "",
-			$$hashKey: ""
 		});
 	}
 
-	$scope.addStep = function(){
-		if($location.url() !== "/add"){
-			$scope.steps.push({
-				description: "",
-				$$hashKey: ""
-			});
-		}
-		else{
-			$scope.step = {
-				description: ""
-			};
-			$scope.steps.push($scope.step)
-			console.log(this.step)
-		}
-		
+	$scope.addStep = function(recipe){
+		recipe.steps.push({
+			description: ""
+		});
 	}
 
-	$scope.deleteStep = function(){
-		const index = this.steps.indexOf(this.step);
-		if(index > -1){
-			this.steps.splice(index, 1);
-		}
+	$scope.deleteIngredient = function(recipe) {
+		const clickedIngredient = this.ingredient;
+		console.log(clickedIngredient);
+		const index = recipe.ingredients.indexOf(clickedIngredient);
+		recipe.ingredients.splice(index, 1)
 	}
 
-	$scope.deleteIngredient = function() {
-		const index = this.ingredients.indexOf(this.ingredient);
-		if(index > -1){
-			this.ingredients.splice(index, 1);
-		}
+	$scope.deleteStep = function(recipe){
+		const clickedStep = this.step;
+		const index = recipe.steps.indexOf(clickedStep);
+		recipe.steps.splice(index, 1)	
 	}
-
 });
 
 
