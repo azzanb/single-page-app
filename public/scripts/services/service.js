@@ -1,3 +1,4 @@
+(function(){
 'use strict';
 
 angular.module('app')
@@ -24,13 +25,14 @@ angular.module('app')
 		.then(callback);	
 	};
 	this.updateRecipe = function(id, data){
-		$http.put(`/api/recipes/${id}`, data)
+		$http.put(`/api/recipes/${id}`, data);
 	};
 	this.addRecipe = function(data){
-		$http.post('/api/recipes', data)
+		$http.post('/api/recipes', data);
 	}
 	this.deleteRecipe = function(id, callback){
 		$http.delete(`/api/recipes/${id}`)
 		.then(callback);
 	};
 });
+}());

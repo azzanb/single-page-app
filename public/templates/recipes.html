@@ -27,7 +27,7 @@
 <!-- TODO Add a directive to this div element so that it repeats 
   for each recipe to display. Also, add a directive to this div element 
   so that it only displays when there are recipes to display. -->
-<div class="grid-100 row addHover" ng-repeat="recipe in getRecipes | filter: filter as available">
+<div class="grid-100 row addHover" ng-repeat="recipe in getRecipes | filter: filter.name as available">
   <a ng-href="#!/edit/{{recipe._id}}">
     <div class="grid-70">
       <p>{{recipe.name}} - ({{recipe.category}})</p>
@@ -40,7 +40,7 @@
           <a ng-href="#!/edit/{{recipe._id}}"> <img src="images/edit.svg" height="12px"> Edit </a>
           <!-- TODO Add a directive to this anchor element so that you can 
             delete the recipe when the user clicks on the 'Delete' link. -->
-          <a ng-click="deleteRecipe()" class="no-action-link"> <img src="images/delete.svg" height="12px"> Delete </a>
+          <a ng-click="deleteRecipe(recipe, $index)" class="no-action-link"> <img src="images/delete.svg" height="12px"> Delete </a>
         </p>
       </div>
     </div>

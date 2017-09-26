@@ -1,3 +1,4 @@
+(function(){
 'use strict';
 
 angular.module('app')
@@ -17,11 +18,15 @@ angular.module('app')
 	}
 	
 	//Anything wrong here?
-	$scope.deleteRecipe = function(){
-		dataService.deleteRecipe(this.recipe._id, res => {
-			$scope.getRecipes.splice(this, 1)
-		});
+	$scope.deleteRecipe = function(recipe, index){
+		if( confirm(`Are you sure you want to delete ${recipe.name}?`) == true ){
+			dataService.deleteRecipe(recipe._id, res => {
+				$scope.getRecipes.splice(index, 1)	
+			});
+		}
+		else return false;
 	};
+			
 })
 .controller('RecipeDetailController', function($scope, dataService, $location, $routeParams){
 
@@ -34,7 +39,7 @@ angular.module('app')
 	});
 
 	//create data for new recipe to be saved
-	let addNewRecipe = {
+	const addNewRecipe = {
 		"name": "",
         "desciption": "",
         "category": "",
@@ -45,7 +50,7 @@ angular.module('app')
 	};
 
 	//Dynamic url routing
-	$scope.edit = $location.url() === `/edit/${$routeParams.id}`;
+	$scope.routeId = $location.url() === `/edit/${$routeParams.id}`;
 
 	//Set placeholder for select element for foodItems when adding a new recipe
 	$scope.addNewFoodItem = $location.url() === "/add" ? "Choose Food Item" : "";
@@ -92,19 +97,15 @@ angular.module('app')
 		});
 	}
 
-	$scope.deleteIngredient = function(recipe) {
-		const clickedIngredient = this.ingredient;
-		console.log(clickedIngredient);
-		const index = recipe.ingredients.indexOf(clickedIngredient);
+	$scope.deleteIngredient = function(recipe, index) {
 		recipe.ingredients.splice(index, 1)
 	}
 
-	$scope.deleteStep = function(recipe){
-		const clickedStep = this.step;
-		const index = recipe.steps.indexOf(clickedStep);
+	$scope.deleteStep = function(recipe, index){
 		recipe.steps.splice(index, 1)	
 	}
 });
+}());
 
 
 
