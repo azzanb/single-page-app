@@ -1,114 +1,142 @@
 (function(){
-'use strict';
+	'use strict';
+	var myApp = angular.module('app');
 
-angular.module('app')
-.controller('RecipesController', function($scope, dataService, $location){
-	
-	dataService.getRecipes(function(response){
-		$scope.getRecipes = response.data;	
-	});
 
-	dataService.getCategories(function(response){
-		$scope.getCategories = response.data;
-		$scope.category = $scope.getCategories[0].name;
-	});
+	myApp.controller('RecipesController', function(dataService, $location){
+		var vm = this;
+		console.log(vm);
 
-	$scope.addRecipe = function(){
-		$location.path('/add')
-	}
-	
-	//Anything wrong here?
-	$scope.deleteRecipe = function(recipe, index){
-		if( confirm(`Are you sure you want to delete ${recipe.name}?`) == true ){
-			dataService.deleteRecipe(recipe._id, res => {
-				$scope.getRecipes.splice(index, 1)	
+		dataService.getRecipes(function(){})
+			.then(function(response){
+				vm.getRecipes = response.data
+			});
+
+		dataService.getCategories(function(){})
+			.then(function(response){
+				vm.getCategories = response.data;
+				console.log(vm.getCategories);
+			});
+
+		/* This function works, but Im trying to use this to filter recipes based on chosen category but I'm not using it in 
+		the template correctly */
+		vm.getRecipesForCategory = function(data){
+			dataService.getRecipesForCategory(data, res => {
+				console.log(res);
 			});
 		}
-		else return false;
-	};
-			
-})
-.controller('RecipeDetailController', function($scope, dataService, $location, $routeParams){
 
-	dataService.getCategories(function(response){
-		$scope.getCategories = response.data;
+		vm.addRecipe = function(){
+			$location.path('/add');
+		}
+
+		vm.deleteRecipe = function(recipe, index){
+			if( confirm(`Are you sure you want to delete ${recipe.name}?`) == true ){
+				dataService.deleteRecipe(recipe._id, res => {
+					console.log(res);
+					console.log(this);
+					vm.getRecipes.splice(index, 1)
+				});
+			};	
+		};	
 	});
+	
 
-	dataService.getFoodItems(function(response){
-		$scope.getFoodItems = response.data;
-	});
+	myApp.controller('RecipeDetailController', function(dataService, $location, $routeParams){
+		var vm = this;
 
-	//create data for new recipe to be saved
-	const addNewRecipe = {
-		"name": "",
-        "desciption": "",
-        "category": "",
-        "prepTime": "",
-        "cookTime": "",
-        "ingredients": [],
-        "steps": []
-	};
+		dataService.getCategories(function(){})
+			.then(function(response){
+				vm.getCategories = response.data;
+				vm.selected = vm.getCategories;
+			});
 
-	//Dynamic url routing
-	$scope.routeId = $location.url() === `/edit/${$routeParams.id}`;
+		dataService.getRecipes(function(){})
+			.then(function(response){
+				vm.getRecipes = response.data
+			});
 
-	//Set placeholder for select element for foodItems when adding a new recipe
-	$scope.addNewFoodItem = $location.url() === "/add" ? "Choose Food Item" : "";
+		dataService.getFoodItems(function(){})
+			.then(function(response){
+				vm.getFoodItems = response.data;
+			});
 
-	//Dynamically get recipe data based on recipe's id: /edit/${id}
-	dataService.getRecipes(function(response){
-		const recipes = response.data;	
-		$scope.recipeData = recipes.filter(function(recipe){
-			return recipe._id === $routeParams.id; 
-		})[0] || addNewRecipe;
-		//console.log($scope.recipeData);
+		//----------DYNAMIC URL ROUTING----------//
+		vm.routeId = $location.url() === `/edit/${$routeParams.id}`;
+		
+		//This serves as the data-binding model 
+		if($location.url() === `/edit/${$routeParams.id}`){
+			dataService.getRecipeForId($routeParams.id)
+		 	 .then(function(res){
+		 		vm.data = res.data;
+				vm.dataObj = {
+					"name": vm.name = res.data.name,
+					"description": vm.description = res.data.description,
+					"category": vm.category = res.data.category,
+					"prepTime": vm.prepTime = res.data.prepTime,
+					"cookTime": vm.cookTime = res.data.cookTime,
+					"ingredients": vm.ingredients = res.data.ingredients,
+					"steps": vm.steps = res.data.steps,
+					"id": vm.id = res.data._id,
+				};			
+		 	});
+		 } else if($location.url() === '/add'){
+		 	vm.dataObj = {
+		 		"name": "",
+		        "desciption": "",
+		        "category": "",
+		        "prepTime": "",
+		        "cookTime": "",
+		        "ingredients": [],
+		        "steps": []
+		 	};
+		 };
+		
+		//Set placeholder for select element for foodItems when adding a new recipe
+		vm.addNewFoodItem = $location.url() === "/add" ? "Choose Food Item" : "";
+		vm.addCategory = $location.url() === "/add" ? "Choose Category" : "";
 
-		if($location.url() === "/add"){
-			$scope.addNew = "Add New Recipe";	
+		
+		vm.addRecipe = function(data){
+			vm.getRecipes.push(data);
+			dataService.addRecipe(data);
+			$location.path('/');
+		}
+
+		vm.updateRecipe = function(id, data){
+			dataService.updateRecipe(id, data, res => {
+				console.log(this);
+			});	
+			$location.path('/');
+		}
+
+		vm.cancel = function(){
+			$location.path('/');
+		}
+
+		vm.addIngredient = function(data){
+			data.ingredients.push({
+				foodItem: "",
+				condition: "",
+				amount: ""
+			});
+		}
+
+		vm.addStep = function(data){
+			data.steps.push({
+				description: ""
+			});
+		}
+
+		vm.deleteIngredient = function(data, index) {
+			data.ingredients.splice(index, 1)			
+		}
+
+		vm.deleteStep = function(data, index){
+			data.steps.splice(index, 1)	
 		}
 	});
-
-	$scope.addRecipe = function(data){
-		dataService.addRecipe(data);
-		$location.path('/');
-	}
-
-	//Anything wrong here?
-	$scope.updateRecipe = function(id, data){
-		dataService.updateRecipe(id, data);
-		$location.path('/');
-	}
-
-	$scope.cancel = function(){
-		$location.path('/');
-	}
-
-	$scope.addIngredient = function(recipe){
-		recipe.ingredients.push({
-			foodtItem: "",
-			condition: "",
-			amount: "",
-		});
-	}
-
-	$scope.addStep = function(recipe){
-		recipe.steps.push({
-			description: ""
-		});
-	}
-
-	$scope.deleteIngredient = function(recipe, index) {
-		recipe.ingredients.splice(index, 1)
-	}
-
-	$scope.deleteStep = function(recipe, index){
-		recipe.steps.splice(index, 1)	
-	}
-});
 }());
-
-
-
 
 
 
