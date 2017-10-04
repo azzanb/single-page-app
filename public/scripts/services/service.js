@@ -13,8 +13,8 @@
 		this.getFoodItems = function(){
 			return $http.get('/api/fooditems');
 		};
-		this.getRecipesForCategory = function(data, callback){
-			$http.get(`/api/recipes?category=${data}`)
+		this.getRecipesForCategory = function(category, callback){
+			$http.get(`/api/recipes?category=${category}`)
 			.then(callback);
 		};
 		this.getRecipeForId = function(id){

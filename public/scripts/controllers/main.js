@@ -3,26 +3,26 @@
 	var myApp = angular.module('app');
 
 
-	myApp.controller('RecipesController', function(dataService, $location){
+	myApp.controller('RecipesController', function(dataService, $location, $scope){
 		var vm = this;
-		console.log(vm);
 
 		dataService.getRecipes(function(){})
 			.then(function(response){
-				vm.getRecipes = response.data
+				vm.getRecipes = response.data;
 			});
 
 		dataService.getCategories(function(){})
 			.then(function(response){
 				vm.getCategories = response.data;
-				console.log(vm.getCategories);
 			});
 
-		/* This function works, but Im trying to use this to filter recipes based on chosen category but I'm not using it in 
-		the template correctly */
-		vm.getRecipesForCategory = function(data){
-			dataService.getRecipesForCategory(data, res => {
-				console.log(res);
+		vm.getRecipesForCategory = function(category){
+			dataService.getRecipesForCategory(category, res => {
+				vm.arr = res.data;
+
+				if($scope.chosen){
+
+				}
 			});
 		}
 
