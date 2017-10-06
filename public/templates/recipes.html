@@ -1,9 +1,5 @@
-<div class="grid-100 row controls" ng-controller="RecipesController as vm">
+<div class="grid-100 row controls">
   <div class="grid-30">
-    <!-- TODO Add directives to the select elememt in order to 
-      populate the list with the categories from the database.
-      You'll also need to add directives to handle when the user 
-      selects a new category so that you can refresh the recipes list. -->
     <select ng-change="vm.getRecipesForCategory(chosen.name)" ng-options="category as category.name for category in vm.getCategories" ng-model="chosen">
       <option value="" disabled selected>Categories:</option>
     </select>
@@ -16,17 +12,12 @@
 </div>
 <div class="clear"></div>
 
-<!-- TODO Add a directive to this div element so that it only displays
-  when there are no recipes to display. -->
 <div ng-hide="available.length" class="grid-100 row">
   <div class="grid-70">
     <p>No recipes found!</p>
   </div>
 </div>
 
-<!-- TODO Add a directive to this div element so that it repeats 
-  for each recipe to display. Also, add a directive to this div element 
-  so that it only displays when there are recipes to display. -->
 <div class="grid-100 row addHover" ng-repeat="recipe in vm.getRecipes | filter:chosen.name as available">
   <a ng-href="#!/edit/{{recipe._id}}">
     <div class="grid-70">
