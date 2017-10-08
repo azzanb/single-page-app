@@ -10,7 +10,7 @@ A database-based app that stores, creates, and deletes recipes using AngularJS
 ### The template folder holds the html templates
 
 
-1) Run in order: `npm install`, `npm run-script db`, `npm run`
+1) Run in order: `npm install`, `npm run-script db`, `npm start`
 
 2) Go to `http://localhost:5000/` and play around!
 
