@@ -2,12 +2,13 @@
 	'use strict';
 	var myApp = angular.module('app');
 
-	myApp.controller('RecipesController', function(dataService, $location){
+	myApp.controller('RecipesController', function(dataService, $location, $scope){
 		var vm = this;
 
 		dataService.getRecipes(function(){})
 			.then(function(response){
 				vm.getRecipes = response.data;
+				console.log(vm.getRecipes)
 			});
 
 		dataService.getCategories(function(){})
@@ -17,7 +18,7 @@
 
 		vm.getRecipesForCategory = function(data){
 			dataService.getRecipesForCategory(data, res => {
-				vm.results = res.data;
+				vm.recipesForCategory = res.data;
 			});
 		};
 
@@ -27,10 +28,11 @@
 
 		vm.deleteRecipe = function(recipe, index){
 			if( confirm(`Are you sure you want to delete ${recipe.name}?`) == true ){
-				dataService.deleteRecipe(recipe._id, res => {
-					vm.getRecipes.splice(index, 1)
+				dataService.deleteRecipe(recipe._id, res => {		
+					vm.recipesForCategory.splice(index, 1);
+					console.log(vm.results);	
 				});
-			};	
+			};
 		};	
 	});
 	
