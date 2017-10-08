@@ -1,6 +1,6 @@
 <div class="grid-100 row controls">
   <div class="grid-30">
-    <select ng-change="vm.getRecipesForCategory(chosenCategory.name)" ng-options="category as category.name for category in vm.getCategories" ng-model="chosen">
+    <select ng-change="vm.getRecipesForCategory(chosenCategory.name)" ng-options="category as category.name for category in vm.getCategories" ng-model="chosenCategory">
       <option value="" disabled selected>Categories:</option>
     </select>
   </div>
@@ -18,7 +18,7 @@
   </div>
 </div>
 
-<div class="grid-100 row addHover" ng-repeat="recipe in vm.results | filter:chosenCategory.name as available">
+<div class="grid-100 row addHover" ng-repeat="recipe in vm.recipesForCategory | filter:chosenCategory.name as available">
   <a ng-href="#!/edit/{{recipe._id}}">
     <div class="grid-70">
       <p>{{recipe.name}}</p>
