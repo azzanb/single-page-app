@@ -1,5 +1,7 @@
-# single-page-app
-A database-based app that stores, creates, and deletes recipes using AngularJS
+# Single Page App
+### A database-based app that stores, creates, and deletes recipes.
+
+### Technologies: AngularJS 2
 
 ### The scripts folder holds the logic files: 
     #### services/service.js
